@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map-container {
+        position: relative;
+        height: 450px;
+        margin-bottom: 27px;
+    }
+
+    #map {
+        position: relative;
+        height: inherit;
+        width: inherit;
+    }
+    </style>
+
+
+</head>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet' />
+
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+
+
+<body>
+<div>
+    <div id="map-container">
+        <div id="map">
+        </div>
+
+    </div>
+</div>
+<script>
+
+      function init(user_lat, user_lng, driver_lat, driver_lng){
+
+      mapboxgl.accessToken = 'pk.eyJ1IjoiZ2FiLWRhLWRldiIsImEiOiJjbDZma214MncwODFuM2pyeDJxa2ZpaDc0In0.rc2tDeF2hFnxJX0p67MfEg';
+      const map = new mapboxgl.Map({
+        units: 'kilometers',
+        container: 'map', // Container ID
+        style: 'mapbox://styles/mapbox/streets-v11', // Map style to use
+        center: [29.171079, -25.871937], // Starting position [lat, lng]
+        zoom: 13 // Starting zoom level
+      });
+
+      var driverCoordinates;
+    var userCoordinates;
+    const start = [driver_lng, driver_lat]; //driverCoordinates;
+      const end = [user_lng, user_lat];
+
+
+    console.log(start, end);
+
+
+      // create a function to make a directions request
+      async function getRoute(end) { //alert(end);
+        // make a directions request using cycling profile
+        // an arbitrary start will always be the same
+        // only the end or destination will change
+        const query = await fetch(
+          `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiZ2FiLWRhLWRldiIsImEiOiJjbDZma214MncwODFuM2pyeDJxa2ZpaDc0In0.rc2tDeF2hFnxJX0p67MfEg`,
+          { method: 'GET' }
+        );
+        const json = await query.json();
+        const data = json.routes[0];
+        const route = data.geometry.coordinates;
+        const geojson = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: route
+          }
+        };
+        // if the route already exists on the map, we'll reset it using setData
+        if (map.getSource('route')) {
+          map.getSource('route').setData(geojson);
+        }
+        // otherwise, we'll make a new request
+        else {
+          map.addLayer({
+            id: 'route',
+            type: 'line',
+            source: {
+              type: 'geojson',
+              data: geojson
+            },
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#3887be',
+              'line-width': 5,
+              'line-opacity': 0.75
+            }
+          });
+        }
+
+        let distance = data.distance / 1000;
+        let duration = data.duration / 60;
+        // add turn instructions here at the end
+        distanceChannel.postMessage(distance);
+        durationChannel.postMessage(duration);
+      }
+
+
+
+      // Add the geocoder to the map
+      // map.addControl(geocoder);
+
+      map.on('load', () => {
+        // make an initial directions request that
+        // starts and ends at the same location
+        getRoute(end);
+
+        // Add starting point to the map
+        map.addLayer({
+          id: 'point',
+          type: 'circle',
+          source: {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: start
+                  }
+                }
+              ]
+            }
+          },
+          paint: {
+            'circle-radius': 10,
+            'circle-color': '#3887be'
+          }
+        });
+        // this is where the code from the next step will go
+      });
+
+      }
+
+
+
+
+
+
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "713684858867",
+    "project_id": "mdelivery-e98d3",
+    "storage_bucket": "mdelivery-e98d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713684858867:android:8d11d5843c0540e5a44486",
+        "android_client_info": {
+          "package_name": "com.example.momo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "713684858867-vi7sg16sri1dtn7esasmlcq17cu5mpoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqp__vKyQpE813HVWH-c_-2BwKaUz8Mvg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "713684858867-vi7sg16sri1dtn7esasmlcq17cu5mpoi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
